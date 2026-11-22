@@ -1,0 +1,49 @@
+{
+  "project_name": "web-polyhedron-viewer",
+  "created_at": "2026-11-23",
+  "status": "requirements_gathered",
+  "requirements": {
+    "1_infrastructure": {
+      "core": "GitHub およびその周辺サービス（GitHub Pages, GitHub Actions 等）",
+      "optional": [
+        "Supabase（データ永続化・短縮URL管理等が必要になった場合）",
+        "Vercel（サーバーレス処理やプレビュー環境が必要になった場合）"
+      ],
+      "design_policy": "静的ホスティング（GitHub Pages等）のみで完結する構成を基本とし、必要に応じてSupabase/Vercelへ疎結合に接続できる設計"
+    },
+    "2_sharing_mechanism": {
+      "target_users": "生徒等の他者",
+      "method": "URLの送付とブラウザでの閲覧",
+      "behavior": "受信者がURLをクリックすると、送信者が作成した図形およびアニメーションが同一状態で再現される"
+    },
+    "3_visualization_specifications": {
+      "target_library_candidate": "Three.js (WebGL)",
+      "geometry_elements": [
+        "頂点座標リスト（黄金比等を用いた正多面体・多角形メッシュ）",
+        "辺（エッジ）および面（ポリゴン）のインデックス定義"
+      ],
+      "materials": [
+        "面ごとの単色マテリアル割り当て（隣接面が同色にならない4色塗り分け等）"
+      ],
+      "animations": [
+        "親オブジェクトを軸とした連続回転ループ（Z軸回転）",
+        "フレーム区間制御による幾何学的変形・組み立てアニメーション（円周配置からの位置線形補間 lerp・回転球面線形補間 slerp・スムーズステップ補間）"
+      ],
+      "annotations": [
+        "指定した面へのテキスト（漢字等）の立体・平面配置"
+      ]
+    },
+    "4_data_conversion_pipeline": {
+      "input_format": "Blender用Pythonスクリプト（.py / bpyモジュール使用）",
+      "required_tool": "手元のBlender用PythonスクリプトからWebビューア用データ（JSON等）および共有URLへ変換するデータ変換用プログラム",
+      "sample_files": [
+        "dodecahedron.py",
+        "dodecahedron_4color.py",
+        "dodecahedron_4color_2.py",
+        "dodecahedron_assemble.py",
+        "icosahedron_assemble.py",
+        "icosahedron_chofukita.py"
+      ]
+    }
+  }
+}
