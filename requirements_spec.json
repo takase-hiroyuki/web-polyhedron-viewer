@@ -47,7 +47,7 @@
     },
     "updated_at": "2026-11-23T05:54:00+09:00"
   },
-  "updated_at": "2026-11-23T07:42:00+09:00",
+  "updated_at": "2026-11-23T07:45:00+09:00",
   "architecture_and_foundation": {
     "github_repository": "https://github.com/takase-hiroyuki/web-polyhedron-viewer",
     "cli_environment": {
@@ -65,7 +65,11 @@
       "url_parameter_spec": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=<model_id>",
       "behavior": "URLクエリパラメータで指定されたJSONをfetchで読み込み、WebGL(Three.js)で自動再生"
     },
-    "updated_at": "2026-11-23T07:25:00+09:00"
+    "updated_at": "2026-11-23T07:45:00+09:00",
+    "technical_highlights": {
+      "pages_routing_decoupling": "GitHub Pagesは公開ルートが /docs 配下に限定されるため、図形データ(data/)は raw.githubusercontent.com のエンドポイント経由で非同期fetchし、コードとデータを分離管理する",
+      "cli_automation": "gh repo create および gh api（-f 'source[branch]=main' -f 'source[path]=/docs' のネスト指定）により、リポジトリ作成からPages有効化までブラウザ操作なしで完結させる"
+    }
   },
   "common_json_schema_design": {
     "conversion_method": "ヘッドレスBlender（blender --background --python）実行による抽出およびキーフレーム圧縮",
@@ -74,19 +78,30 @@
       "materials": "name, rgba の配列",
       "objects": "name, type(MESH/FONT), parent, material_index, vertices, edges, faces, keyframes(frame, loc, rot), text, size, rgba"
     },
-    "updated_at": "2026-11-23T07:28:00+09:00"
+    "updated_at": "2026-11-23T07:45:00+09:00",
+    "technical_highlights": {
+      "static_dynamic_separation": "頂点・辺・面・マテリアルは静的配列として1回だけ保持し、アニメーションはフレームごとの姿勢差分（keyframes）のみを保持することでデータ容量を大幅に削減する",
+      "quaternion_memory_layout": "BlenderのQuaternionは(w, x, y, z)順だが、Three.jsのQuaternion.set()に直接渡せるようJSON出力段階で [x, y, z, w] 順に正規化して保存する",
+      "hierarchy_preservation": "オブジェクトごとの parent フィールド（親オブジェクト名）を保持し、Web側で Three.js の Object3D 親子階層を再構築することで親軸回転や面追従テキストをそのまま再現する"
+    }
   },
   "implementation_record": {
-    "updated_at": "2026-11-23T07:42:00+09:00",
+    "updated_at": "2026-11-23T07:45:00+09:00",
     "1_converter_pipeline": {
-      "updated_at": "2026-11-23T07:32:00+09:00",
+      "updated_at": "2026-11-23T07:45:00+09:00",
       "script": "converter/bpy_to_json.py",
       "batch_script": "converter/batch_convert.sh",
       "blender_version": "Blender 5.2.2 LTS",
-      "notes": "GUI再生タイマーを無効化したヘッドレス実行によりメッシュ・マテリアル・テキスト・圧縮キーフレームを抽出。自己再帰ランチャーを持つファイルは本体(_old.py)を参照"
+      "notes": "GUI再生タイマーを無効化したヘッドレス実行によりメッシュ・マテリアル・テキスト・圧縮キーフレームを抽出。自己再帰ランチャーを持つファイルは本体(_old.py)を参照",
+      "technical_highlights": {
+        "headless_timer_hook": "元スクリプト内の bpy.app.timers.register を実行前にダミー関数で上書きし、--background モードでの意図しないタイマー起動やエラーを防止する",
+        "keyframe_compression_math": "静止区間（前後のフレームと位置差が1e-5未満かつ回転が同一）を間引く際、クォータニオンの符号反転（q と -q が同一姿勢）を考慮して |dot(q1, q2)| ≒ 1 で判定する",
+        "material_color_extraction": "Principled BSDF ノードの Base Color を優先取得し、未設定時は diffuse_color へフォールバックする",
+        "recursion_guard": "カメラ追加用ラッパーが自分自身と同名ファイルを exec() して RecursionError になる構成を避け、本体ロジック（_old.py 等）を直接変換対象に指定する"
+      }
     },
     "2_generated_models": {
-      "updated_at": "2026-11-23T07:32:00+09:00",
+      "updated_at": "2026-11-23T07:45:00+09:00",
       "catalog_file": "data/index.json",
       "models": [
         {
@@ -124,10 +139,14 @@
           "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=icosahedron_chofukita",
           "updated_at": "2026-11-23T07:32:00+09:00"
         }
-      ]
+      ],
+      "technical_highlights": {
+        "catalog_driven_loading": "data/index.json に全モデルのメタデータ一覧を集約し、Webビューア起動時にこれを読み込むことでUIのドロップダウン生成とデフォルトモデル選択を自動化する",
+        "compression_efficiency": "組み立てアニメーション（300フレーム・20面＋文字）でもキーフレーム圧縮と空白除去（separators=(',', ':')）により1モデル約230KBに収めている"
+      }
     },
     "3_web_viewer_and_deployment": {
-      "updated_at": "2026-11-23T07:35:00+09:00",
+      "updated_at": "2026-11-23T07:45:00+09:00",
       "files": [
         "docs/index.html",
         "docs/viewer.js"
@@ -145,7 +164,14 @@
         "lerp/slerp補間によるキーフレームアニメーション再生・一時停止・フレームスライダー",
         "Canvasテクスチャによる日本語テキスト描画およびZ-upからY-upへの座標系変換",
         "共有URLワンクリックコピー機能"
-      ]
+      ],
+      "technical_highlights": {
+        "coordinate_system_conversion": "Blender（右手系Z-up）からThree.js（右手系Y-up）へ変換するため、全オブジェクトを格納するルートグループ zUpRoot に rotation.x = -Math.PI / 2 を適用する",
+        "lightweight_kanji_rendering": "数MBに及ぶ日本語Webフォントの読み込みを回避するため、512x512のHTML5 Canvasに漢字を描画して CanvasTexture 化し、PlaneGeometry に貼り付ける",
+        "polygon_triangulation_and_zfighting": "五角形などの多角形面は扇形分割（fan triangulation）で三角形メッシュ化し、輪郭線（LineSegments）とのちらつき（Z-fighting）を防ぐため polygonOffset を有効化する",
+        "realtime_interpolation": "現在フレームが属するキーフレーム区間を二分探索（O(log N)）で特定し、位置は lerpVectors、回転は slerpQuaternions で60fps滑らかに補間描画する",
+        "dual_environment_fetch": "ローカルプレビュー時の相対パス（../data/）と GitHub Pages 公開時の raw.githubusercontent.com の双方に自動フォールバック対応する"
+      }
     }
   },
   "changelog": [
@@ -163,6 +189,11 @@
       "timestamp": "2026-11-23T07:42:00+09:00",
       "target": "implementation_record",
       "summary": "変換スクリプト作成・5モデルのJSON生成・Three.jsビューア構築・GitHub Pages公開の記録および項目別タイムスタンプの導入"
+    },
+    {
+      "timestamp": "2026-11-23T07:45:00+09:00",
+      "target": "architecture_and_foundation, common_json_schema_design, implementation_record",
+      "summary": "プログラム構造の理解・保守のため、各設計・実装項目に技術的重要事項（technical_highlights）フィールドを追加"
     }
   ]
 }
