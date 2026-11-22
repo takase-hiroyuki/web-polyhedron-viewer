@@ -1,0 +1,34 @@
+{
+  "models": [
+    {
+      "id": "dodecahedron",
+      "title": "正十二面体（ワイヤーフレーム）",
+      "file": "dodecahedron.json",
+      "frame_end": 250
+    },
+    {
+      "id": "dodecahedron_4color",
+      "title": "正十二面体（4色塗り分け・回転）",
+      "file": "dodecahedron_4color.json",
+      "frame_end": 240
+    },
+    {
+      "id": "dodecahedron_assemble",
+      "title": "正十二面体（4色・組み立てアニメーション）",
+      "file": "dodecahedron_assemble.json",
+      "frame_end": 180
+    },
+    {
+      "id": "icosahedron_assemble",
+      "title": "正二十面体（4色・組み立てアニメーション）",
+      "file": "icosahedron_assemble.json",
+      "frame_end": 210
+    },
+    {
+      "id": "icosahedron_chofukita",
+      "title": "正二十面体（4色・組み立て・調布北高）",
+      "file": "icosahedron_chofukita.json",
+      "frame_end": 300
+    }
+  ]
+}
