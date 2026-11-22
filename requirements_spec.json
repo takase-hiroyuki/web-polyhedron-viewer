@@ -1,7 +1,7 @@
 {
   "project_name": "web-polyhedron-viewer",
   "created_at": "2026-11-23",
-  "status": "requirements_gathered",
+  "status": "foundation_and_schema_designed",
   "requirements": {
     "1_infrastructure": {
       "core": "GitHub およびその周辺サービス（GitHub Pages, GitHub Actions 等）",
@@ -44,6 +44,33 @@
         "icosahedron_assemble.py",
         "icosahedron_chofukita.py"
       ]
+    }
+  },
+  "updated_at": "2026-11-23",
+  "architecture_and_foundation": {
+    "github_repository": "https://github.com/takase-hiroyuki/web-polyhedron-viewer",
+    "cli_environment": {
+      "os": "Fedora 45 (aarch64)",
+      "gh_cli": "2.104.0 (authenticated as takase-hiroyuki)",
+      "git_branch": "main"
+    },
+    "directory_structure": {
+      "converter/": "Blender用(.py)からWeb用(.json)への変換スクリプト配置用",
+      "data/": "GitHub上に保存する図形JSONデータ（最大100種類程度）およびカタログindex.json配置用",
+      "docs/": "GitHub Pages公開用Three.js Webビューア配置用"
+    },
+    "hosting_and_url_routing": {
+      "storage": "約100種類の図形JSONをGitHubリポジトリ内（data/）に保存",
+      "url_parameter_spec": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=<model_id>",
+      "behavior": "URLクエリパラメータで指定されたJSONをfetchで読み込み、WebGL(Three.js)で自動再生"
+    }
+  },
+  "common_json_schema_design": {
+    "conversion_method": "ヘッドレスBlender（blender --background --python）実行による抽出およびキーフレーム圧縮",
+    "top_level_keys": {
+      "meta": "id, title, frame_start, frame_end, fps",
+      "materials": "name, rgba の配列",
+      "objects": "name, type(MESH/FONT), parent, material_index, vertices, edges, faces, keyframes(frame, loc, rot), text, size, rgba"
     }
   }
 }
