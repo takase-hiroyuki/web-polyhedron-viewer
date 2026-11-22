@@ -1,7 +1,7 @@
 {
   "project_name": "web-polyhedron-viewer",
-  "created_at": "2026-11-23",
-  "status": "foundation_and_schema_designed",
+  "created_at": "2026-11-23T05:54:00+09:00",
+  "status": "deployed_to_github_pages",
   "requirements": {
     "1_infrastructure": {
       "core": "GitHub およびその周辺サービス（GitHub Pages, GitHub Actions 等）",
@@ -44,9 +44,10 @@
         "icosahedron_assemble.py",
         "icosahedron_chofukita.py"
       ]
-    }
+    },
+    "updated_at": "2026-11-23T05:54:00+09:00"
   },
-  "updated_at": "2026-11-23",
+  "updated_at": "2026-11-23T07:42:00+09:00",
   "architecture_and_foundation": {
     "github_repository": "https://github.com/takase-hiroyuki/web-polyhedron-viewer",
     "cli_environment": {
@@ -63,7 +64,8 @@
       "storage": "約100種類の図形JSONをGitHubリポジトリ内（data/）に保存",
       "url_parameter_spec": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=<model_id>",
       "behavior": "URLクエリパラメータで指定されたJSONをfetchで読み込み、WebGL(Three.js)で自動再生"
-    }
+    },
+    "updated_at": "2026-11-23T07:25:00+09:00"
   },
   "common_json_schema_design": {
     "conversion_method": "ヘッドレスBlender（blender --background --python）実行による抽出およびキーフレーム圧縮",
@@ -71,6 +73,96 @@
       "meta": "id, title, frame_start, frame_end, fps",
       "materials": "name, rgba の配列",
       "objects": "name, type(MESH/FONT), parent, material_index, vertices, edges, faces, keyframes(frame, loc, rot), text, size, rgba"
+    },
+    "updated_at": "2026-11-23T07:28:00+09:00"
+  },
+  "implementation_record": {
+    "updated_at": "2026-11-23T07:42:00+09:00",
+    "1_converter_pipeline": {
+      "updated_at": "2026-11-23T07:32:00+09:00",
+      "script": "converter/bpy_to_json.py",
+      "batch_script": "converter/batch_convert.sh",
+      "blender_version": "Blender 5.2.2 LTS",
+      "notes": "GUI再生タイマーを無効化したヘッドレス実行によりメッシュ・マテリアル・テキスト・圧縮キーフレームを抽出。自己再帰ランチャーを持つファイルは本体(_old.py)を参照"
+    },
+    "2_generated_models": {
+      "updated_at": "2026-11-23T07:32:00+09:00",
+      "catalog_file": "data/index.json",
+      "models": [
+        {
+          "id": "dodecahedron",
+          "title": "正十二面体（ワイヤーフレーム）",
+          "source": "dodecahedron.py",
+          "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=dodecahedron",
+          "updated_at": "2026-11-23T07:32:00+09:00"
+        },
+        {
+          "id": "dodecahedron_4color",
+          "title": "正十二面体（4色塗り分け・回転）",
+          "source": "dodecahedron_4color.py",
+          "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=dodecahedron_4color",
+          "updated_at": "2026-11-23T07:32:00+09:00"
+        },
+        {
+          "id": "dodecahedron_assemble",
+          "title": "正十二面体（4色・組み立てアニメーション）",
+          "source": "dodecahedron_assemble_old.py",
+          "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=dodecahedron_assemble",
+          "updated_at": "2026-11-23T07:32:00+09:00"
+        },
+        {
+          "id": "icosahedron_assemble",
+          "title": "正二十面体（4色・組み立てアニメーション）",
+          "source": "icosahedron_assemble.py",
+          "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=icosahedron_assemble",
+          "updated_at": "2026-11-23T07:32:00+09:00"
+        },
+        {
+          "id": "icosahedron_chofukita",
+          "title": "正二十面体（4色・組み立て・調布北高）",
+          "source": "icosahedron_chofukita_old.py",
+          "url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/?model=icosahedron_chofukita",
+          "updated_at": "2026-11-23T07:32:00+09:00"
+        }
+      ]
+    },
+    "3_web_viewer_and_deployment": {
+      "updated_at": "2026-11-23T07:35:00+09:00",
+      "files": [
+        "docs/index.html",
+        "docs/viewer.js"
+      ],
+      "three_js_version": "0.170.0",
+      "github_pages": {
+        "source_branch": "main",
+        "source_path": "/docs",
+        "public_url": "https://takase-hiroyuki.github.io/web-polyhedron-viewer/",
+        "data_fetch_endpoint": "https://raw.githubusercontent.com/takase-hiroyuki/web-polyhedron-viewer/main/data/"
+      },
+      "features": [
+        "クエリパラメータ(?model=<id>)によるモデル指定およびモデル切り替えUI",
+        "OrbitControlsによる360度視点回転・ズーム",
+        "lerp/slerp補間によるキーフレームアニメーション再生・一時停止・フレームスライダー",
+        "Canvasテクスチャによる日本語テキスト描画およびZ-upからY-upへの座標系変換",
+        "共有URLワンクリックコピー機能"
+      ]
     }
-  }
+  },
+  "changelog": [
+    {
+      "timestamp": "2026-11-23T05:54:00+09:00",
+      "target": "requirements",
+      "summary": "初期要件定義の作成"
+    },
+    {
+      "timestamp": "2026-11-23T07:25:00+09:00",
+      "target": "architecture_and_foundation, common_json_schema_design",
+      "summary": "GitHubリポジトリ構築・CLI連携および共通JSONスキーマ設計の記録"
+    },
+    {
+      "timestamp": "2026-11-23T07:42:00+09:00",
+      "target": "implementation_record",
+      "summary": "変換スクリプト作成・5モデルのJSON生成・Three.jsビューア構築・GitHub Pages公開の記録および項目別タイムスタンプの導入"
+    }
+  ]
 }
